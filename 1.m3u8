@@ -1,2 +1,19 @@
+#EXTM3U
+#EXTM3U x-tvg-url="https://epg.iill.top/epg.xml"
+#EXTINF:-1 tvg-id="汕头综合" tvg-name="汕头综合" tvg-logo="" group-title="广东地方",汕头综合
 http://sttv-hls.strtv.cn/lKGXIQa/500/01sl7G0.m3u8?sign=9aa494c1f7d9e25bde2d8c06b305ffcb&t=6a997c65
+#EXTM3U x-tvg-url="https://epg.iill.top/epg.xml"
+#EXTINF:-1 tvg-id="汕头综合" tvg-name="汕头综合" tvg-logo="" group-title="广东地方",汕头综合
+http://www.yahao.host:4022/rtp/239.253.43.45:5146
+#EXTINF:-1 tvg-id="汕头综合" tvg-name="汕头综合" tvg-logo="" group-title="广东地方",汕头综合
+http://www.tyio.cc:8188/rtp/239.253.43.45:5146
+#EXTM3U x-tvg-url="https://epg.iill.top/epg.xml"
+#EXTM3U x-tvg-url="https://epg.iill.top/epg.xml"
+#EXTINF:-1 tvg-id="汕头综合" tvg-name="汕头综合" tvg-logo="" group-title="广东地方",汕头经济
 http://sttv-hls.strtv.cn/7xjJK9d/500/q22t7j0.m3u8?sign=97dd8fc356631110f5f057d28b15d2cb&t=6a997bcd
+#EXTM3U x-tvg-url="https://epg.iill.top/epg.xml"
+#EXTINF:-1 tvg-id="汕头综合" tvg-name="汕头综合" tvg-logo="" group-title="广东地方",汕头经济
+http://www.yahao.host:4022/rtp/239.253.43.46:5146
+#EXTINF:-1 tvg-id="汕头综合" tvg-name="汕头综合" tvg-logo="" group-title="广东地方",汕头经济
+http://www.tyio.cc:8188/rtp/239.253.43.46:5146
+#EXTM3U x-tvg-url="https://epg.iill.top/epg.xml"
