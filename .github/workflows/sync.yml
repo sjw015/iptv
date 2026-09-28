@@ -11,17 +11,30 @@ jobs:
     steps:
       - name: 检出仓库代码
         uses: actions/checkout@v4
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
-      - name: 下载最新M3U源文件
+      - name: 网络诊断 + 下载M3U源
         run: |
+          echo "=== 1. 域名解析测试 ==="
+          nslookup xymm.1000s.dpdns.org || echo "域名解析失败"
+          
+          echo ""
+          echo "=== 2. 连接性测试 ==="
+          curl -I --max-time 10 "https://xymm.1000s.dpdns.org/" || echo "站点连接失败，退出码：$?"
+          
+          echo ""
+          echo "=== 3. 下载M3U文件 ==="
           curl -vL --max-time 60 \
-            --retry 3 --retry-delay 5 \
+            --retry 2 --retry-delay 3 \
             -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
             "https://xymm.1000s.dpdns.org/iptv" \
-            -o smart.txt || {
-              echo "❌ 下载失败，curl退出码：$?"
-              exit 1
-            }
+            -o smart.txt
+          
+          if [ $? -ne 0 ]; then
+            echo "❌ 下载失败，curl退出码：$?"
+            exit 1
+          fi
 
       - name: 校验文件有效性
         run: |
@@ -30,11 +43,11 @@ jobs:
             exit 1
           fi
           if ! grep -q "#EXTM3U" smart.txt; then
-            echo "❌ 文件不是有效的M3U格式，内容预览："
+            echo "❌ 非M3U格式，文件前20行："
             head -20 smart.txt
             exit 1
           fi
-          echo "✅ 文件有效，行数：$(wc -l < smart.txt)"
+          echo "✅ 文件有效，共 $(wc -l < smart.txt) 行"
 
       - name: 提交并推送更新
         run: |
@@ -42,7 +55,7 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add smart.txt
           git commit -m "自动同步IPTV源列表" || {
-            echo "ℹ️ 文件无变更，跳过提交"
+            echo "ℹ️ 内容无变化，跳过提交"
             exit 0
           }
           git push
