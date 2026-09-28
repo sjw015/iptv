@@ -1,34 +1,37 @@
 name: 自动同步IPTV源
 
 on:
-  # 定时执行：每6小时一次（0点、6点、12点、18点）
   schedule:
     - cron: '0 */6 * * *'
-  # 支持手动触发（仓库 Actions 页面可以点按钮立即运行）
   workflow_dispatch:
 
 jobs:
   sync-iptv:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: 检出仓库代码
         uses: actions/checkout@v4
 
       - name: 下载最新M3U源文件
         run: |
-          curl -sL --max-time 60 \
+          curl -vL --max-time 60 \
+            --retry 3 --retry-delay 5 \
             -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
-            "https://xymm.100s.dpdns.org/iptv" \
-            -o smart.txt
+            "https://xymm.1000s.dpdns.org/iptv" \
+            -o smart.txt || {
+              echo "❌ 下载失败，curl退出码：$?"
+              exit 1
+            }
 
       - name: 校验文件有效性
         run: |
           if [ ! -s smart.txt ]; then
-            echo "❌ 下载的文件为空，终止提交"
+            echo "❌ 下载的文件为空"
             exit 1
           fi
           if ! grep -q "#EXTM3U" smart.txt; then
-            echo "❌ 文件不是有效的M3U格式，终止提交"
+            echo "❌ 文件不是有效的M3U格式，内容预览："
+            head -20 smart.txt
             exit 1
           fi
           echo "✅ 文件有效，行数：$(wc -l < smart.txt)"
@@ -38,5 +41,8 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add smart.txt
-          git commit -m "自动同步IPTV源列表" || exit 0
+          git commit -m "自动同步IPTV源列表" || {
+            echo "ℹ️ 文件无变更，跳过提交"
+            exit 0
+          }
           git push
