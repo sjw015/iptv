@@ -132,6 +132,7 @@
             justify-content: center;
             gap: 6px;
             -webkit-tap-highlight-color: transparent;
+            width: 100%;
         }
         button:active {
             transform: scale(0.97);
@@ -217,10 +218,12 @@
 
     <script>
         (function() {
-            // ---- 固定配置 ----
-            const CONTENT_URL = 'https://域名/自定义id';
-            const API_URL = 'https://域名/api/push';
-            const FIXED_ID = '自定义id';
+            // ---- 自动获取当前页面的 ID (例如从 /ID/2o66lp8z 中提取出 2o66lp8z) ----
+            const pathParts = window.location.pathname.split('/');
+            const currentSlug = pathParts[pathParts.length - 1] || '';
+            
+            const CONTENT_URL = window.location.pathname;
+            const API_URL = '/ymzz/update-code';
 
             // ---- DOM 引用 ----
             const contentInput = document.getElementById('contentInput');
@@ -246,17 +249,16 @@
                 statusMsg.className = 'status';
             });
 
-            // ---- 加载内容（添加时间戳防止缓存） ----
+            // ---- 加载内容 ----
             async function loadContent() {
                 loadStatus.innerHTML = '<span>⏳ 正在加载内容...</span>';
                 contentInput.disabled = true;
                 contentInput.placeholder = '加载中...';
 
-                // 添加随机时间戳绕过浏览器缓存
                 const urlWithTS = CONTENT_URL + '?t=' + Date.now();
 
                 try {
-                    const resp = await fetch(urlWithTS);
+                    const resp = await fetch(urlWithTS, { cache: 'no-store' });
                     if (!resp.ok) {
                         if (resp.status === 404) {
                             throw new Error('内容不存在 (404)，请编辑后创建');
@@ -273,9 +275,9 @@
                     contentInput.value = '';
                     charCount.textContent = '0 字符';
                     loadStatus.innerHTML = `
-                            <span class="err">⚠️ 加载失败: ${escapeHtml(err.message)}</span>
-                            <button class="retry-btn" id="retryLoadBtn">🔄 重试</button>
-                        `;
+                        <span class="err">⚠️ 加载失败: ${escapeHtml(err.message)}</span>
+                        <button class="retry-btn" id="retryLoadBtn">🔄 重试</button>
+                    `;
                     contentInput.placeholder = '暂无内容，可手动粘贴或输入';
                     const retryBtn = document.getElementById('retryLoadBtn');
                     if (retryBtn) {
@@ -310,12 +312,16 @@
                 statusMsg.className = 'status';
 
                 try {
-                    const payload = { content, slug: FIXED_ID };
+                    // 使用 FormData 传参，完美适配后端的 handleUpdateCode 逻辑
+                    const formData = new FormData();
+                    formData.append('code', content);
+                    formData.append('slug', currentSlug);
+
                     const resp = await fetch(API_URL, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        body: formData
                     });
+                    
                     const data = await resp.json();
                     if (!resp.ok || !data.success) {
                         throw new Error(data.error || 'HTTP ' + resp.status);
@@ -324,15 +330,12 @@
                     statusMsg.textContent = '✅ 更新成功！';
                     statusMsg.className = 'status success';
 
-                    // 更新成功后重新加载最新内容（带时间戳）
-                    await loadContent();
+                    // 更新成功后重新加载最新内容
+                    setTimeout(loadContent, 500);
 
                 } catch (err) {
                     console.error(err);
                     let msg = '❌ 更新失败: ' + err.message;
-                    if (err.message.includes('fetch') || err.message.includes('Failed to fetch')) {
-                        msg += ' (请检查网络或 CORS 配置)';
-                    }
                     statusMsg.textContent = msg;
                     statusMsg.className = 'status error';
                 } finally {
