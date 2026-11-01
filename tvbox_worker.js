@@ -1,3 +1,4 @@
+//配合tvbox推送面板_worker.js
 //✅ 部署步骤：
 1. 在 Cloudflare Workers 中创建新 Worker。
 2. 绑定 KV 命名空间（变量名为 SUB_KV）。
