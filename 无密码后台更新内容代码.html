@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OK影视接口更新</title>
+    <style>
+        :root {
+            --bg: #0d0d16;
+            --surface: #161622;
+            --surface2: #1e1e30;
+            --text: #e0e0f0;
+            --text2: #9696b0;
+            --accent: #6c5ce7;
+            --accent2: #00d2a0;
+            --border: #2a2a40;
+            --radius: 14px;
+            --radius-sm: 10px;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px 16px;
+            background-image: radial-gradient(ellipse at 20% 0%, rgba(108, 92, 231, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 100%, rgba(0, 210, 160, 0.06) 0%, transparent 60%);
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px 20px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+        }
+        h1 {
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 0.85em;
+            color: var(--text2);
+            margin-bottom: 18px;
+        }
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 16px;
+            resize: vertical;
+            min-height: 320px;
+            outline: none;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            line-height: 1.5;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+        }
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+        .char-count {
+            font-size: 0.7em;
+            color: var(--text2);
+            text-align: right;
+            margin-top: 4px;
+        }
+        .toolbar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin: 8px 0 12px 0;
+        }
+        .btn-clear {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-clear:active {
+            background: #3a2a4a;
+            border-color: var(--accent);
+            color: #fff;
+        }
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 14px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 20px rgba(108, 92, 231, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        button:active {
+            transform: scale(0.97);
+            background: #5a4bd1;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .status {
+            font-size: 0.9em;
+            min-height: 24px;
+            color: var(--text2);
+            margin-top: 8px;
+            text-align: center;
+        }
+        .status.success {
+            color: var(--accent2);
+        }
+        .status.error {
+            color: #f87171;
+        }
+        .load-status {
+            font-size: 0.8em;
+            color: var(--text2);
+            text-align: center;
+            padding: 6px 0 10px 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 6px 12px;
+        }
+        .load-status .ok {
+            color: var(--accent2);
+        }
+        .load-status .err {
+            color: #f87171;
+        }
+        .load-status .retry-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .load-status .retry-btn:active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 更新卡片 -->
+        <div class="card">
+            <h1>🐱 OK影视接口更新</h1>
+            <div class="subtitle"></div>
+
+            <div class="load-status" id="loadStatus">
+                <span>⏳ 正在加载内容...</span>
+            </div>
+
+            <textarea id="contentInput" placeholder="等待加载或在此粘贴内容..."></textarea>
+            <div class="char-count" id="charCount">0 字符</div>
+
+            <div class="toolbar">
+                <button class="btn-clear" id="clearContentBtn">🗑️ 清空内容</button>
+            </div>
+
+            <button id="updateBtn">
+                <span id="btnText">📤 更新内容</span>
+                <span id="btnLoader" style="display:none;">⏳</span>
+            </button>
+            <div class="status" id="statusMsg"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ---- 固定配置 ----
+            const CONTENT_URL = 'https://域名/自定义id';
+            const API_URL = 'https://域名/api/push';
+            const FIXED_ID = '自定义id';
+
+            // ---- DOM 引用 ----
+            const contentInput = document.getElementById('contentInput');
+            const updateBtn = document.getElementById('updateBtn');
+            const btnText = document.getElementById('btnText');
+            const btnLoader = document.getElementById('btnLoader');
+            const statusMsg = document.getElementById('statusMsg');
+            const charCount = document.getElementById('charCount');
+            const loadStatus = document.getElementById('loadStatus');
+            const clearContentBtn = document.getElementById('clearContentBtn');
+
+            // ---- 字符计数 ----
+            contentInput.addEventListener('input', () => {
+                charCount.textContent = contentInput.value.length + ' 字符';
+            });
+
+            // ---- 清空内容 ----
+            clearContentBtn.addEventListener('click', () => {
+                contentInput.value = '';
+                charCount.textContent = '0 字符';
+                contentInput.focus();
+                statusMsg.textContent = '';
+                statusMsg.className = 'status';
+            });
+
+            // ---- 加载内容（添加时间戳防止缓存） ----
+            async function loadContent() {
+                loadStatus.innerHTML = '<span>⏳ 正在加载内容...</span>';
+                contentInput.disabled = true;
+                contentInput.placeholder = '加载中...';
+
+                // 添加随机时间戳绕过浏览器缓存
+                const urlWithTS = CONTENT_URL + '?t=' + Date.now();
+
+                try {
+                    const resp = await fetch(urlWithTS);
+                    if (!resp.ok) {
+                        if (resp.status === 404) {
+                            throw new Error('内容不存在 (404)，请编辑后创建');
+                        }
+                        throw new Error('HTTP ' + resp.status);
+                    }
+                    const text = await resp.text();
+                    contentInput.value = text;
+                    charCount.textContent = text.length + ' 字符';
+                    loadStatus.innerHTML = '✅ 已加载现有内容 (<span class="ok">' + text.length + ' 字符</span>)';
+                    contentInput.placeholder = '在此编辑内容...';
+                } catch (err) {
+                    console.warn('加载内容失败:', err);
+                    contentInput.value = '';
+                    charCount.textContent = '0 字符';
+                    loadStatus.innerHTML = `
+                            <span class="err">⚠️ 加载失败: ${escapeHtml(err.message)}</span>
+                            <button class="retry-btn" id="retryLoadBtn">🔄 重试</button>
+                        `;
+                    contentInput.placeholder = '暂无内容，可手动粘贴或输入';
+                    const retryBtn = document.getElementById('retryLoadBtn');
+                    if (retryBtn) {
+                        retryBtn.addEventListener('click', () => {
+                            loadContent();
+                        });
+                    }
+                } finally {
+                    contentInput.disabled = false;
+                }
+            }
+
+            function escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            // ---- 更新内容 ----
+            async function handleUpdate() {
+                const content = contentInput.value;
+                if (!content || content.trim().length === 0) {
+                    statusMsg.textContent = '❌ 内容不能为空';
+                    statusMsg.className = 'status error';
+                    return;
+                }
+
+                updateBtn.disabled = true;
+                btnText.style.display = 'none';
+                btnLoader.style.display = 'inline';
+                statusMsg.textContent = '⏳ 正在更新...';
+                statusMsg.className = 'status';
+
+                try {
+                    const payload = { content, slug: FIXED_ID };
+                    const resp = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await resp.json();
+                    if (!resp.ok || !data.success) {
+                        throw new Error(data.error || 'HTTP ' + resp.status);
+                    }
+
+                    statusMsg.textContent = '✅ 更新成功！';
+                    statusMsg.className = 'status success';
+
+                    // 更新成功后重新加载最新内容（带时间戳）
+                    await loadContent();
+
+                } catch (err) {
+                    console.error(err);
+                    let msg = '❌ 更新失败: ' + err.message;
+                    if (err.message.includes('fetch') || err.message.includes('Failed to fetch')) {
+                        msg += ' (请检查网络或 CORS 配置)';
+                    }
+                    statusMsg.textContent = msg;
+                    statusMsg.className = 'status error';
+                } finally {
+                    updateBtn.disabled = false;
+                    btnText.style.display = 'inline';
+                    btnLoader.style.display = 'none';
+                }
+            }
+
+            // ---- 更新按钮 ----
+            updateBtn.addEventListener('click', handleUpdate);
+
+            // ---- 快捷键 (Ctrl/Cmd + Enter) ----
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    handleUpdate();
+                }
+            });
+
+            // ---- 初始化 ----
+            loadContent();
+        })();
+    </script>
+</body>
+</html>
