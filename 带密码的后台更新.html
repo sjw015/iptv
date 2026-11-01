@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>OK影视接口更新</title>
     <style>
-        /* ===== 全局变量 ===== */
         :root {
             --bg: #0d0d16;
             --surface: #161622;
@@ -20,442 +19,71 @@
             --error: #f87171;
             --shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
         }
-
-        /* ===== 重置 & 基础 ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: var(--bg);
-            color: var(--text);
+            background: var(--bg); color: var(--text);
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            padding: 20px 16px;
-            background-image:
-                radial-gradient(ellipse at 20% 0%, rgba(108, 92, 231, 0.08) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 100%, rgba(0, 210, 160, 0.06) 0%, transparent 60%);
+            display: flex; justify-content: center; align-items: flex-start;
+            min-height: 100vh; padding: 20px 16px;
         }
-
-        .container {
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* ===== 卡片通用 ===== */
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px 20px;
-            box-shadow: var(--shadow);
-            transition: opacity 0.4s ease, transform 0.4s ease;
-        }
-
-        /* ===== 隐藏辅助类（关键修复） ===== */
-        .hidden {
-            display: none !important;
-        }
-
-        /* ===== 密码验证卡片 ===== */
-        #authContainer .card {
-            text-align: center;
-            padding: 36px 28px;
-            max-width: 420px;
-            margin: 0 auto;
-        }
-
-        #authContainer .lock-icon {
-            font-size: 3.2rem;
-            margin-bottom: 6px;
-            display: block;
-        }
-
-        #authContainer h2 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 4px;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        #authContainer .auth-sub {
-            color: var(--text2);
-            font-size: 0.9rem;
-            margin-bottom: 22px;
-        }
-
-        .auth-input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 4px;
-        }
-
-        .auth-input-wrap {
-            position: relative;
-            display: flex;
-            align-items: center;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .auth-input-wrap:focus-within {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.12);
-        }
-
-        .auth-input-wrap.error {
-            border-color: var(--error);
-            box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.15);
-        }
-
-        .auth-input-wrap input {
-            flex: 1;
-            padding: 14px 16px;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--text);
-            font-size: 16px;
-            font-family: inherit;
-            -webkit-appearance: none;
-        }
-
-        .auth-input-wrap input::placeholder {
-            color: var(--text2);
-            opacity: 0.6;
-        }
-
-        .toggle-pwd {
-            background: none;
-            border: none;
-            color: var(--text2);
-            font-size: 1.2rem;
-            padding: 0 14px;
-            cursor: pointer;
-            transition: color 0.2s;
-            -webkit-tap-highlight-color: transparent;
-            line-height: 1;
-        }
-
-        .toggle-pwd:hover {
-            color: var(--text);
-        }
-
-        .toggle-pwd:active {
-            color: var(--accent);
-        }
-
-        .auth-error {
-            min-height: 28px;
-            font-size: 0.85rem;
-            color: var(--error);
-            margin-top: 4px;
-            text-align: left;
-            padding-left: 4px;
-            transition: opacity 0.2s;
-        }
-
-        .auth-error.empty {
-            opacity: 0;
-        }
-
-        .auth-btn {
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            border-radius: var(--radius-sm);
-            padding: 14px 20px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 20px rgba(108, 92, 231, 0.3);
-            -webkit-tap-highlight-color: transparent;
-            margin-top: 4px;
-            letter-spacing: 0.3px;
-            width: 100%;
-        }
-
-        .auth-btn:active {
-            transform: scale(0.97);
-            background: #5a4bd1;
-        }
-
-        .auth-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .auth-footer {
-            margin-top: 16px;
-            font-size: 0.75rem;
-            color: var(--text2);
-            opacity: 0.5;
-        }
-
-        /* ===== 主界面 ===== */
-        #mainContainer .card {
-            padding: 24px 20px;
-        }
-
-        #mainContainer h1 {
-            text-align: center;
-            font-size: 1.8em;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 4px;
-        }
-
-        #mainContainer .subtitle {
-            text-align: center;
-            font-size: 0.85em;
-            color: var(--text2);
-            margin-bottom: 18px;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 12px 14px;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            color: var(--text);
-            font-size: 16px;
-            resize: vertical;
-            min-height: 320px;
-            outline: none;
-            font-family: 'JetBrains Mono', 'Fira Code', monospace;
-            line-height: 1.5;
-            transition: border-color 0.2s;
-            -webkit-appearance: none;
-        }
-
-        textarea:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
-        }
-
-        textarea:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .char-count {
-            font-size: 0.7em;
-            color: var(--text2);
-            text-align: right;
-            margin-top: 4px;
-        }
-
-        .toolbar {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin: 8px 0 12px 0;
-        }
-
-        .btn-clear {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text2);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            cursor: pointer;
-            transition: all 0.2s;
-            -webkit-tap-highlight-color: transparent;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .btn-clear:active {
-            background: #3a2a4a;
-            border-color: var(--accent);
-            color: #fff;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: var(--radius-sm);
-            padding: 14px 20px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            letter-spacing: 0.3px;
-            transition: all 0.2s;
-            box-shadow: 0 4px 20px rgba(108, 92, 231, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            -webkit-tap-highlight-color: transparent;
-            width: 100%;
-        }
-
-        .btn-primary:active {
-            transform: scale(0.97);
-            background: #5a4bd1;
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .status {
-            font-size: 0.9em;
-            min-height: 24px;
-            color: var(--text2);
-            margin-top: 8px;
-            text-align: center;
-        }
-
-        .status.success {
-            color: var(--accent2);
-        }
-
-        .status.error {
-            color: var(--error);
-        }
-
-        .load-status {
-            font-size: 0.8em;
-            color: var(--text2);
-            text-align: center;
-            padding: 6px 0 10px 0;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 6px 12px;
-        }
-
-        .load-status .ok {
-            color: var(--accent2);
-        }
-
-        .load-status .err {
-            color: var(--error);
-        }
-
-        .load-status .retry-btn {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 2px 12px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .load-status .retry-btn:active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
-        }
-
-        /* ===== 响应式 ===== */
-        @media (max-width: 480px) {
-            #authContainer .card {
-                padding: 28px 18px;
-            }
-            #authContainer .lock-icon {
-                font-size: 2.6rem;
-            }
-            #authContainer h2 {
-                font-size: 1.3rem;
-            }
-            .auth-input-wrap input {
-                font-size: 15px;
-                padding: 12px 14px;
-            }
-            .auth-btn {
-                font-size: 15px;
-                padding: 12px 16px;
-            }
-            #mainContainer .card {
-                padding: 18px 14px;
-            }
-            textarea {
-                min-height: 220px;
-                font-size: 15px;
-                padding: 10px 12px;
-            }
-        }
+        .container { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 20px; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 20px; box-shadow: var(--shadow); }
+        .hidden { display: none !important; }
+        #authContainer .card { text-align: center; padding: 36px 28px; max-width: 420px; margin: 0 auto; }
+        #authContainer .lock-icon { font-size: 3.2rem; margin-bottom: 6px; display: block; }
+        #authContainer h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .auth-input-group { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .auth-input-wrap { position: relative; display: flex; align-items: center; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+        .auth-input-wrap input { flex: 1; padding: 14px 16px; background: transparent; border: none; outline: none; color: var(--text); font-size: 16px; }
+        .toggle-pwd { background: none; border: none; color: var(--text2); font-size: 1.2rem; padding: 0 14px; cursor: pointer; }
+        .auth-error { min-height: 24px; font-size: 0.85rem; color: var(--error); text-align: left; padding-left: 4px; }
+        .auth-error.empty { opacity: 0; }
+        .auth-btn, .btn-primary { background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); padding: 14px 20px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s; }
+        .auth-btn:active, .btn-primary:active { transform: scale(0.97); background: #5a4bd1; }
+        #mainContainer h1 { text-align: center; font-size: 1.8em; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+        textarea { width: 100%; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 15px; resize: vertical; min-height: 300px; outline: none; font-family: monospace; line-height: 1.5; margin-top: 12px; }
+        textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1); }
+        .char-count { font-size: 0.75em; color: var(--text2); text-align: right; margin-top: 4px; }
+        .toolbar { display: flex; justify-content: flex-end; margin: 8px 0 12px 0; }
+        .btn-clear { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); padding: 6px 14px; border-radius: 20px; font-size: 0.8em; cursor: pointer; }
+        .status { font-size: 0.9em; min-height: 24px; color: var(--text2); margin-top: 8px; text-align: center; }
+        .status.success { color: var(--accent2); }
+        .status.error { color: var(--error); }
+        .load-status { font-size: 0.8em; color: var(--text2); text-align: center; margin-bottom: 10px; }
+        .load-status .ok { color: var(--accent2); }
+        .load-status .err { color: var(--error); }
+        .retry-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 2px 12px; border-radius: 20px; font-size: 0.8em; cursor: pointer; margin-left: 8px; }
     </style>
 </head>
 <body>
-
     <div class="container">
-
-        <!-- ===== 密码验证卡片 ===== -->
+        <!-- 密码验证卡片 -->
         <div id="authContainer">
             <div class="card">
                 <span class="lock-icon">🔐</span>
                 <h2>输入密码</h2>
-                <p class="auth-sub">请输入访问密码以继续</p>
-
+                <p style="color:var(--text2); font-size:0.9rem; margin-top:4px;">请输入访问密码以继续</p>
                 <div class="auth-input-group">
                     <div class="auth-input-wrap" id="authInputWrap">
-                        <input
-                        type="password"
-                        id="authPassword"
-                        placeholder="请输入密码"
-                        autocomplete="current-password"
-                        autofocus
-                        />
-                        <button class="toggle-pwd" id="togglePwdBtn" type="button" aria-label="显示/隐藏密码">
-                            👁️
-                        </button>
+                        <input type="password" id="authPassword" placeholder="请输入密码" autocomplete="current-password" autofocus />
+                        <button class="toggle-pwd" id="togglePwdBtn" type="button">👁️</button>
                     </div>
                     <div class="auth-error empty" id="authError"></div>
                 </div>
-
-                <button class="auth-btn" id="authBtn">确认</button>
-                <div class="auth-footer">⏎ 回车键快速确认</div>
+                <button class="auth-btn" id="authBtn" style="margin-top:10px;">确认</button>
             </div>
         </div>
 
-        <!-- ===== 主界面 ===== -->
+        <!-- 主界面 -->
         <div id="mainContainer" class="hidden">
             <div class="card">
                 <h1>🐱 OK影视接口更新</h1>
-                <div class="subtitle"></div>
-
-                <div class="load-status" id="loadStatus">
-                    <span>⏳ 正在加载内容...</span>
-                </div>
-
+                <div class="load-status" id="loadStatus"><span>⏳ 正在加载内容...</span></div>
                 <textarea id="contentInput" placeholder="等待加载或在此粘贴内容..."></textarea>
                 <div class="char-count" id="charCount">0 字符</div>
-
                 <div class="toolbar">
                     <button class="btn-clear" id="clearContentBtn">🗑️ 清空内容</button>
                 </div>
-
                 <button class="btn-primary" id="updateBtn">
                     <span id="btnText">📤 更新内容</span>
                     <span id="btnLoader" style="display:none;">⏳</span>
@@ -463,26 +91,17 @@
                 <div class="status" id="statusMsg"></div>
             </div>
         </div>
-
     </div>
 
     <script>
         (function() {
-            // ============================================================
-            //  🔑 在这里修改密码（用户可自定义）
-            // ============================================================
             const ACCESS_PASSWORD = 'hunter15';
+            
+            // 自动获取当前页面的 ID (例如从 /ID/2o66lp8z 提取出 2o66lp8z)
+            const pathParts = window.location.pathname.split('/');
+            const currentSlug = pathParts[pathParts.length - 1] || '';
+            const API_URL = '/ymzz/update-code'; 
 
-            // ============================================================
-            //  固定配置（请勿修改）
-            // ============================================================
-            const CONTENT_URL = 'https://域名/自定义id';
-            const API_URL = 'https://域名/api/push';
-            const FIXED_ID = '自定义id';
-
-            // ============================================================
-            //  DOM 引用
-            // ============================================================
             const authContainer = document.getElementById('authContainer');
             const mainContainer = document.getElementById('mainContainer');
             const authInput = document.getElementById('authPassword');
@@ -500,81 +119,23 @@
             const loadStatus = document.getElementById('loadStatus');
             const clearContentBtn = document.getElementById('clearContentBtn');
 
-            // ============================================================
-            //  密码验证逻辑
-            // ============================================================
-            let authAttempts = 0;
-
-            function showAuthError(msg) {
-                authError.textContent = msg || '';
-                authError.className = 'auth-error' + (msg ? '' : ' empty');
-                authWrap.classList.toggle('error', !!msg);
-            }
-
-            function clearAuthError() {
-                showAuthError('');
-            }
-
             function doAuth() {
-                const pwd = authInput.value;
-                if (!pwd) {
-                    showAuthError('请输入密码');
-                    authInput.focus();
-                    return;
-                }
-
-                if (pwd === ACCESS_PASSWORD) {
-                    // 验证成功
-                    showAuthError('');
-                    authInput.value = '';
+                if (authInput.value === ACCESS_PASSWORD) {
                     authContainer.classList.add('hidden');
                     mainContainer.classList.remove('hidden');
-                    // 初始化主界面
                     initMain();
-                    // 自动聚焦到文本框
                     setTimeout(() => contentInput.focus(), 300);
                 } else {
-                    authAttempts++;
-                    showAuthError('❌ 密码错误，请重试');
+                    authError.textContent = '❌ 密码错误，请重试';
+                    authError.classList.remove('empty');
                     authInput.value = '';
                     authInput.focus();
-                    authInput.select();
-                    // 抖动效果
-                    authWrap.style.animation = 'none';
-                    requestAnimationFrame(() => {
-                        authWrap.style.animation = 'shake 0.3s ease';
-                    });
                 }
             }
 
-            // 抖动 keyframes（动态注入）
-            const styleSheet = document.createElement('style');
-            styleSheet.textContent = `
-                        @keyframes shake {
-                            0%, 100% { transform: translateX(0); }
-                            20% { transform: translateX(-8px); }
-                            40% { transform: translateX(8px); }
-                            60% { transform: translateX(-5px); }
-                            80% { transform: translateX(5px); }
-                        }
-                    `;
-            document.head.appendChild(styleSheet);
-
-            // 密码输入框事件
-            authInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    doAuth();
-                }
-                // 输入时清除错误状态
-                if (authWrap.classList.contains('error')) {
-                    clearAuthError();
-                }
-            });
-
+            authInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') doAuth(); });
             authBtn.addEventListener('click', doAuth);
-
-            // 显示/隐藏密码
+            
             let pwdVisible = false;
             togglePwdBtn.addEventListener('click', () => {
                 pwdVisible = !pwdVisible;
@@ -582,83 +143,35 @@
                 togglePwdBtn.textContent = pwdVisible ? '🙈' : '👁️';
             });
 
-            // 自动聚焦
-            authInput.focus();
-
-            // ============================================================
-            //  主界面逻辑（与原来一致，略作优化）
-            // ============================================================
-            let isMainReady = false;
-
             function initMain() {
-                if (isMainReady) return;
-                isMainReady = true;
-
-                // ---- 字符计数 ----
                 contentInput.addEventListener('input', () => {
                     charCount.textContent = contentInput.value.length + ' 字符';
                 });
 
-                // ---- 清空内容 ----
                 clearContentBtn.addEventListener('click', () => {
                     contentInput.value = '';
                     charCount.textContent = '0 字符';
-                    contentInput.focus();
                     statusMsg.textContent = '';
-                    statusMsg.className = 'status';
                 });
 
-                // ---- 加载内容 ----
                 async function loadContent() {
                     loadStatus.innerHTML = '<span>⏳ 正在加载内容...</span>';
-                    contentInput.disabled = true;
-                    contentInput.placeholder = '加载中...';
-
-                    const urlWithTS = CONTENT_URL + '?t=' + Date.now();
-
                     try {
-                        const resp = await fetch(urlWithTS);
-                        if (!resp.ok) {
-                            if (resp.status === 404) {
-                                throw new Error('内容不存在 (404)，请编辑后创建');
-                            }
-                            throw new Error('HTTP ' + resp.status);
-                        }
+                        const resp = await fetch(window.location.pathname + '?t=' + Date.now(), { cache: 'no-store' });
+                        if (!resp.ok) throw new Error('HTTP ' + resp.status);
                         const text = await resp.text();
                         contentInput.value = text;
                         charCount.textContent = text.length + ' 字符';
                         loadStatus.innerHTML = '✅ 已加载现有内容 (<span class="ok">' + text.length + ' 字符</span>)';
-                        contentInput.placeholder = '在此编辑内容...';
                     } catch (err) {
-                        console.warn('加载内容失败:', err);
-                        contentInput.value = '';
-                        charCount.textContent = '0 字符';
-                        loadStatus.innerHTML = `
-                                    <span class="err">⚠️ 加载失败: ${escapeHtml(err.message)}</span>
-                                    <button class="retry-btn" id="retryLoadBtn">🔄 重试</button>
-                                `;
-                        contentInput.placeholder = '暂无内容，可手动粘贴或输入';
-                        const retryBtn = document.getElementById('retryLoadBtn');
-                        if (retryBtn) {
-                            retryBtn.addEventListener('click', () => {
-                                loadContent();
-                            });
-                        }
-                    } finally {
-                        contentInput.disabled = false;
+                        loadStatus.innerHTML = '<span class="err">⚠️ 加载失败</span><button class="retry-btn" id="retryLoadBtn">重试</button>';
+                        document.getElementById('retryLoadBtn')?.addEventListener('click', loadContent);
                     }
                 }
 
-                function escapeHtml(str) {
-                    const div = document.createElement('div');
-                    div.textContent = str;
-                    return div.innerHTML;
-                }
-
-                // ---- 更新内容 ----
                 async function handleUpdate() {
                     const content = contentInput.value;
-                    if (!content || content.trim().length === 0) {
+                    if (!content.trim()) {
                         statusMsg.textContent = '❌ 内容不能为空';
                         statusMsg.className = 'status error';
                         return;
@@ -671,29 +184,24 @@
                     statusMsg.className = 'status';
 
                     try {
-                        const payload = { content, slug: FIXED_ID };
+                        const formData = new FormData();
+                        formData.append('code', content);
+                        formData.append('slug', currentSlug); // 传递当前页面的 ID 进行精准覆盖
+
                         const resp = await fetch(API_URL, {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
+                            body: formData
                         });
+                        
                         const data = await resp.json();
-                        if (!resp.ok || !data.success) {
-                            throw new Error(data.error || 'HTTP ' + resp.status);
-                        }
+                        if (!resp.ok || !data.success) throw new Error(data.error || '更新失败');
 
                         statusMsg.textContent = '✅ 更新成功！';
                         statusMsg.className = 'status success';
-
-                        await loadContent();
-
+                        // 更新成功后重新加载当前内容，验证是否写入成功
+                        setTimeout(loadContent, 500);
                     } catch (err) {
-                        console.error(err);
-                        let msg = '❌ 更新失败: ' + err.message;
-                        if (err.message.includes('fetch') || err.message.includes('Failed to fetch')) {
-                            msg += ' (请检查网络或 CORS 配置)';
-                        }
-                        statusMsg.textContent = msg;
+                        statusMsg.textContent = '❌ 更新失败: ' + err.message;
                         statusMsg.className = 'status error';
                     } finally {
                         updateBtn.disabled = false;
@@ -702,26 +210,14 @@
                     }
                 }
 
-                // ---- 更新按钮 ----
                 updateBtn.addEventListener('click', handleUpdate);
-
-                // ---- 快捷键 (Ctrl/Cmd + Enter) ----
                 document.addEventListener('keydown', (e) => {
-                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                        e.preventDefault();
-                        handleUpdate();
-                    }
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') handleUpdate();
                 });
 
-                // ---- 初始加载 ----
                 loadContent();
             }
-
-            // 如果密码验证通过，主界面初始化会在 doAuth 中调用
-            // 否则主界面保持隐藏
-
         })();
     </script>
-
 </body>
 </html>
